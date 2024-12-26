@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="/frontend/cigi.png">
+    <link rel="stylesheet" href="./style.css">
+    <title>🚭 Cigi-Counter 🚬</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: rgb(0, 78, 0);
+            text-align: center;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 2px solid black;
+        }
+
+        h1 {
+            font-size: 50px;
+            color: #000000;
+        }
+
+        p {
+            text-shadow: 2px 0 #ff0000, -2px 0 #ff0000, 0 2px #ff0000, 0 -2px #ff0000,
+            1px 1px #ff0000, -1px -1px #ff0000, 1px -1px #ff0000, -1px 1px #ff0000;
+            margin: 20px;
+            margin-bottom: 40px;
+            color: black;
+            font-size: 80px;
+        }
+
+        button {
+            font-size: 30px;
+            background-color: black;
+            color: greenyellow;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        button:active {
+            background-color: #003d80;
+        }
+
+        .delete-btn {
+            background-color: #dc3545;
+        }
+
+        .delete-btn:hover {
+            background-color: #c82333;
+        }
+
+        .decrement-btn {
+            background-color: #ff851b;
+        }
+
+        .decrement-btn:hover {
+            background-color: #e67e00;
+        }
+
+        #decrement {
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>| Bokros & Bodó |</h2>
+        <!-- <h2>| C-Counter |</h2> -->
+        <h1>2025</h1>
+        <p id="counter">Betöltés...</p>
+        <button id="increment">?! Még egy cigiii !?</button>
+        <button id="decrement" class="decrement-btn">Egyet törölni</button>
+        <button id="reset" class="delete-btn">Törlés</button>
+    </div>
+
+    <script>
+        const counterElement = document.getElementById('counter');
+        const incrementButton = document.getElementById('increment');
+        const decrementButton = document.getElementById('decrement');
+        const resetButton = document.getElementById('reset');
+
+        // Számláló lekérése
+        async function fetchCounter() {
+            try {
+                const response = await fetch('http://127.0.0.1:5000/get_counter');  // Flask backend 5000-es portja
+                if (!response.ok) {
+                    throw new Error('Hiba történt a számláló lekérésekor');
+                }
+                const data = await response.json();
+                counterElement.textContent = data.value;
+            } catch (error) {
+                console.error(error);
+                counterElement.textContent = 'Hiba a számláló lekérésekor';
+            }
+        }
+
+        // Számláló növelése
+        async function incrementCounter() {
+            try {
+                const response = await fetch('http://127.0.0.1:5000/increment', {
+                    method: 'POST',  // POST kérés a megfelelő végpontra
+                });
+                if (!response.ok) {
+                    throw new Error('Hiba történt a számláló növelésekor');
+                }
+                const data = await response.json();
+                counterElement.textContent = data.value;
+            } catch (error) {
+                console.error(error);
+                counterElement.textContent = 'Hiba a számláló növelésekor';
+            }
+        }
+
+        // Számláló törlése
+        async function resetCounter() {
+            try {
+                const response = await fetch('http://127.0.0.1:5000/reset', {
+                    method: 'POST',  // POST kérés a törléshez
+                });
+                if (!response.ok) {
+                    throw new Error('Hiba történt a számláló törlésénél');
+                }
+                const data = await response.json();
+                counterElement.textContent = data.value;
+            } catch (error) {
+                console.error(error);
+                counterElement.textContent = 'Hiba a számláló törlésénél';
+            }
+        }
+
+        // Számláló csökkentése 1-tel
+        async function decrementCounter() {
+            try {
+                const response = await fetch('http://127.0.0.1:5000/decrement', {
+                    method: 'POST',  // POST kérés a csökkentéshez
+                });
+                if (!response.ok) {
+                    throw new Error('Hiba történt a számláló csökkentésénél');
+                }
+                const data = await response.json();
+                counterElement.textContent = data.value;
+            } catch (error) {
+                console.error(error);
+                counterElement.textContent = 'Hiba a számláló csökkentésénél';
+            }
+        }
+
+        incrementButton.addEventListener('click', incrementCounter);
+        resetButton.addEventListener('click', resetCounter);
+        decrementButton.addEventListener('click', decrementCounter);
+
+        // Kezdeti számláló érték betöltése
+        fetchCounter();
+    </script>
+</body>
+</html>
